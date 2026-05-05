@@ -1,0 +1,2651 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "MaintSys API",
+        "description": "API de gerenciamento de manutenção industrial - MaintSys",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Retorna o usuário autenticado",
+                "operationId": "bc2032a379aa97707ccc61511897c120",
+                "responses": {
+                    "200": {
+                        "description": "Dados do usuário autenticado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "João Silva"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "joao@exemplo.com"
+                                        },
+                                        "roles": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "admin"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Registra um novo usuário",
+                "operationId": "5d4fa5d5607ed675ba93907e1fc94534",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "João Silva"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "joao@exemplo.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "secret123",
+                                        "minLength": 6
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuário criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abc123..."
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "João Silva"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "joao@exemplo.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Realiza o login do usuário",
+                "operationId": "67d6d0fdd54fba132e1b6f55ca254183",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "joao@exemplo.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "secret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login realizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abc123..."
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "João Silva"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "joao@exemplo.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciais inválidas"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Realiza o logout do usuário",
+                "operationId": "28d48c13fca984400ac8de99f54ee13a",
+                "responses": {
+                    "200": {
+                        "description": "Logout realizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout realizado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/machines": {
+            "get": {
+                "tags": [
+                    "Máquinas"
+                ],
+                "summary": "Lista todas as máquinas",
+                "operationId": "5998a2cdaadf6f32ab905c78c5c60f12",
+                "responses": {
+                    "200": {
+                        "description": "Lista de máquinas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "serial_number": {
+                                                "type": "string",
+                                                "example": "SN-001"
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Torno CNC"
+                                            },
+                                            "model": {
+                                                "type": "string",
+                                                "example": "CNC-500"
+                                            },
+                                            "location": {
+                                                "type": "string",
+                                                "example": "Galpão A"
+                                            },
+                                            "status": {
+                                                "type": "string",
+                                                "example": "active",
+                                                "enum": [
+                                                    "active",
+                                                    "inactive",
+                                                    "maintenance"
+                                                ]
+                                            },
+                                            "installed_at": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2023-01-15"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Máquinas"
+                ],
+                "summary": "Cadastra uma nova máquina",
+                "operationId": "9c7c1a200dac4400582d7552961c1f20",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "serial_number",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "serial_number": {
+                                        "type": "string",
+                                        "example": "SN-002"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Fresadora"
+                                    },
+                                    "model": {
+                                        "type": "string",
+                                        "example": "FR-300"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Galpão B"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "active",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "maintenance"
+                                        ]
+                                    },
+                                    "installed_at": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-03-10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Máquina criada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "serial_number": {
+                                            "type": "string",
+                                            "example": "SN-002"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Fresadora"
+                                        },
+                                        "model": {
+                                            "type": "string",
+                                            "example": "FR-300"
+                                        },
+                                        "location": {
+                                            "type": "string",
+                                            "example": "Galpão B"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "active"
+                                        },
+                                        "installed_at": {
+                                            "type": "string",
+                                            "example": "2024-03-10"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/machines/{id}": {
+            "get": {
+                "tags": [
+                    "Máquinas"
+                ],
+                "summary": "Retorna uma máquina específica",
+                "operationId": "7b2a92bd0a873fb1adb329e771d9b59b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da máquina",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dados da máquina",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "serial_number": {
+                                            "type": "string",
+                                            "example": "SN-001"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Torno CNC"
+                                        },
+                                        "model": {
+                                            "type": "string",
+                                            "example": "CNC-500"
+                                        },
+                                        "location": {
+                                            "type": "string",
+                                            "example": "Galpão A"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "active"
+                                        },
+                                        "installed_at": {
+                                            "type": "string",
+                                            "example": "2023-01-15"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    },
+                    "404": {
+                        "description": "Máquina não encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Máquinas"
+                ],
+                "summary": "Atualiza uma máquina",
+                "operationId": "6495cb40b92d773ef7758df26fedbc7d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da máquina",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "serial_number": {
+                                        "type": "string",
+                                        "example": "SN-001-A"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Torno CNC Atualizado"
+                                    },
+                                    "model": {
+                                        "type": "string",
+                                        "example": "CNC-600"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Galpão C"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "maintenance",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "maintenance"
+                                        ]
+                                    },
+                                    "installed_at": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-01-15"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Máquina atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "serial_number": {
+                                            "type": "string",
+                                            "example": "SN-001-A"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Torno CNC Atualizado"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "maintenance"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    },
+                    "404": {
+                        "description": "Máquina não encontrada"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Máquinas"
+                ],
+                "summary": "Remove uma máquina",
+                "operationId": "9cbc00780e4380f6622bb0589dce0f17",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da máquina",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Máquina removida com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Máquina removida"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    },
+                    "404": {
+                        "description": "Máquina não encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/machine-readings": {
+            "get": {
+                "tags": [
+                    "Leituras de Máquinas"
+                ],
+                "summary": "Lista todas as leituras de sensores",
+                "operationId": "4aa2cd412e243b07875bc66b86f598b0",
+                "responses": {
+                    "200": {
+                        "description": "Lista de leituras de sensores",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "machine_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "sensor_key": {
+                                                "type": "string",
+                                                "example": "temperatura"
+                                            },
+                                            "value": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 75.5
+                                            },
+                                            "unit": {
+                                                "type": "string",
+                                                "example": "°C"
+                                            },
+                                            "read_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-01-10T10:30:00Z"
+                                            },
+                                            "machine": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Leituras de Máquinas"
+                ],
+                "summary": "Registra uma nova leitura de sensor",
+                "operationId": "af9cdca04ccd07023826755bcb1f707d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "machine_id",
+                                    "sensor_key",
+                                    "value",
+                                    "read_at"
+                                ],
+                                "properties": {
+                                    "machine_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "sensor_key": {
+                                        "type": "string",
+                                        "example": "pressao"
+                                    },
+                                    "value": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 3.2
+                                    },
+                                    "unit": {
+                                        "type": "string",
+                                        "example": "bar"
+                                    },
+                                    "read_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-01-10T10:30:00Z"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Leitura registrada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "machine_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "sensor_key": {
+                                            "type": "string",
+                                            "example": "pressao"
+                                        },
+                                        "value": {
+                                            "type": "number",
+                                            "example": 3.2
+                                        },
+                                        "unit": {
+                                            "type": "string",
+                                            "example": "bar"
+                                        },
+                                        "read_at": {
+                                            "type": "string",
+                                            "example": "2024-01-10T10:30:00Z"
+                                        },
+                                        "machine": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/machine-readings/{id}": {
+            "get": {
+                "tags": [
+                    "Leituras de Máquinas"
+                ],
+                "summary": "Retorna uma leitura de sensor específica",
+                "operationId": "ae528d42b697f330281ec9147925d626",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da leitura",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dados da leitura",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "machine_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "sensor_key": {
+                                            "type": "string",
+                                            "example": "temperatura"
+                                        },
+                                        "value": {
+                                            "type": "number",
+                                            "example": 75.5
+                                        },
+                                        "unit": {
+                                            "type": "string",
+                                            "example": "°C"
+                                        },
+                                        "read_at": {
+                                            "type": "string",
+                                            "example": "2024-01-10T10:30:00Z"
+                                        },
+                                        "machine": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Leitura não encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Leituras de Máquinas"
+                ],
+                "summary": "Atualiza uma leitura de sensor",
+                "operationId": "65f8cda109da14dfb15b0a14a47d58e6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da leitura",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "sensor_key": {
+                                        "type": "string",
+                                        "example": "temperatura"
+                                    },
+                                    "value": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 80
+                                    },
+                                    "unit": {
+                                        "type": "string",
+                                        "example": "°C"
+                                    },
+                                    "read_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-01-10T11:00:00Z"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Leitura atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "sensor_key": {
+                                            "type": "string",
+                                            "example": "temperatura"
+                                        },
+                                        "value": {
+                                            "type": "number",
+                                            "example": 80
+                                        },
+                                        "unit": {
+                                            "type": "string",
+                                            "example": "°C"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Leitura não encontrada"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Leituras de Máquinas"
+                ],
+                "summary": "Remove uma leitura de sensor",
+                "operationId": "77f7ab88daa11002a4455ac4ab3a2b11",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da leitura",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Leitura removida com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Leitura removida"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Leitura não encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/maintenance-logs": {
+            "get": {
+                "tags": [
+                    "Logs de Manutenção"
+                ],
+                "summary": "Lista todos os logs de manutenção",
+                "operationId": "3f1612f2c1dafe6278765537b0f75529",
+                "responses": {
+                    "200": {
+                        "description": "Lista de logs de manutenção",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "machine_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "service_order_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "user_id": {
+                                                "type": "integer",
+                                                "example": 2
+                                            },
+                                            "action": {
+                                                "type": "string",
+                                                "example": "Troca de óleo"
+                                            },
+                                            "defect_type": {
+                                                "type": "string",
+                                                "example": "Desgaste"
+                                            },
+                                            "machine": {
+                                                "type": "object"
+                                            },
+                                            "serviceOrder": {
+                                                "type": "object"
+                                            },
+                                            "user": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Logs de Manutenção"
+                ],
+                "summary": "Registra um novo log de manutenção",
+                "operationId": "c16988cb3995dc8454458a8025ab74c3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "machine_id",
+                                    "action"
+                                ],
+                                "properties": {
+                                    "machine_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "service_order_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "action": {
+                                        "type": "string",
+                                        "example": "Substituição de correia"
+                                    },
+                                    "defect_type": {
+                                        "type": "string",
+                                        "example": "Quebra mecânica"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Log de manutenção criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "machine_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "action": {
+                                            "type": "string",
+                                            "example": "Substituição de correia"
+                                        },
+                                        "user_id": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "machine": {
+                                            "type": "object"
+                                        },
+                                        "serviceOrder": {
+                                            "type": "object"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/maintenance-logs/{id}": {
+            "get": {
+                "tags": [
+                    "Logs de Manutenção"
+                ],
+                "summary": "Retorna um log de manutenção específico",
+                "operationId": "cfb11ef88102c1c0f804124665a63251",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do log de manutenção",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dados do log de manutenção",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "machine_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "action": {
+                                            "type": "string",
+                                            "example": "Troca de óleo"
+                                        },
+                                        "defect_type": {
+                                            "type": "string",
+                                            "example": "Desgaste"
+                                        },
+                                        "machine": {
+                                            "type": "object"
+                                        },
+                                        "serviceOrder": {
+                                            "type": "object"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Log não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Logs de Manutenção"
+                ],
+                "summary": "Atualiza um log de manutenção",
+                "operationId": "04fa9aade5e79a33bf197d64d5dc9e97",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do log de manutenção",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "action": {
+                                        "type": "string",
+                                        "example": "Lubrificação revisada"
+                                    },
+                                    "defect_type": {
+                                        "type": "string",
+                                        "example": "Folga"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Log de manutenção atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "action": {
+                                            "type": "string",
+                                            "example": "Lubrificação revisada"
+                                        },
+                                        "defect_type": {
+                                            "type": "string",
+                                            "example": "Folga"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Log não encontrado"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Logs de Manutenção"
+                ],
+                "summary": "Remove um log de manutenção",
+                "operationId": "e5256e91503c091ad1b1a38e8a833af6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do log de manutenção",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Log removido com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Log removido"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Log não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/service-orders": {
+            "get": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Lista todas as ordens de serviço",
+                "operationId": "392f8fd18aeeb85f1bcb225ad0e9629e",
+                "responses": {
+                    "200": {
+                        "description": "Lista de ordens de serviço",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "machine_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "technician_id": {
+                                                "type": "integer",
+                                                "example": 2
+                                            },
+                                            "created_by": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "type": {
+                                                "type": "string",
+                                                "example": "preventive",
+                                                "enum": [
+                                                    "preventive",
+                                                    "corrective"
+                                                ]
+                                            },
+                                            "status": {
+                                                "type": "string",
+                                                "example": "open",
+                                                "enum": [
+                                                    "open",
+                                                    "in_progress",
+                                                    "completed",
+                                                    "cancelled"
+                                                ]
+                                            },
+                                            "started_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-01-10T08:00:00Z"
+                                            },
+                                            "completed_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": null
+                                            },
+                                            "machine": {
+                                                "type": "object"
+                                            },
+                                            "technician": {
+                                                "type": "object"
+                                            },
+                                            "creator": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Cria uma nova ordem de serviço",
+                "operationId": "5146b275532154bec69f4c3dbee5b1a2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "machine_id",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "machine_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "technician_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "corrective",
+                                        "enum": [
+                                            "preventive",
+                                            "corrective"
+                                        ]
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "open",
+                                        "enum": [
+                                            "open",
+                                            "in_progress",
+                                            "completed",
+                                            "cancelled"
+                                        ]
+                                    },
+                                    "started_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-01-10T08:00:00Z"
+                                    },
+                                    "completed_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": null
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ordem de serviço criada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "machine_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "example": "corrective"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "open"
+                                        },
+                                        "created_by": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "machine": {
+                                            "type": "object"
+                                        },
+                                        "technician": {
+                                            "type": "object"
+                                        },
+                                        "creator": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/service-orders/{id}": {
+            "get": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Retorna uma ordem de serviço específica",
+                "operationId": "b27e0ec6d7c33e45d947e3085821e6aa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da ordem de serviço",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dados da ordem de serviço",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "machine_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "example": "preventive"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "in_progress"
+                                        },
+                                        "machine": {
+                                            "type": "object"
+                                        },
+                                        "technician": {
+                                            "type": "object"
+                                        },
+                                        "creator": {
+                                            "type": "object"
+                                        },
+                                        "logs": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Ordem de serviço não encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Atualiza uma ordem de serviço",
+                "operationId": "6726a1dab460dafaee1ca0751d4b482c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da ordem de serviço",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "machine_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "technician_id": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "preventive",
+                                        "enum": [
+                                            "preventive",
+                                            "corrective"
+                                        ]
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "completed",
+                                        "enum": [
+                                            "open",
+                                            "in_progress",
+                                            "completed",
+                                            "cancelled"
+                                        ]
+                                    },
+                                    "started_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-01-10T08:00:00Z"
+                                    },
+                                    "completed_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-01-10T17:00:00Z"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ordem de serviço atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "completed"
+                                        },
+                                        "machine": {
+                                            "type": "object"
+                                        },
+                                        "technician": {
+                                            "type": "object"
+                                        },
+                                        "creator": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Ordem de serviço não encontrada"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Remove uma ordem de serviço",
+                "operationId": "5f0b457281715f390c566d0c99a1a6c8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da ordem de serviço",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ordem de serviço removida com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ordem de serviço removida"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Ordem de serviço não encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/status-alerts": {
+            "get": {
+                "tags": [
+                    "Alertas de Status"
+                ],
+                "summary": "Lista todos os alertas de status",
+                "operationId": "a8d25cb4b9b686ecc54e69a1d3b109b2",
+                "responses": {
+                    "200": {
+                        "description": "Lista de alertas de status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "machine_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "previous_status": {
+                                                "type": "string",
+                                                "example": "active"
+                                            },
+                                            "new_status": {
+                                                "type": "string",
+                                                "example": "maintenance"
+                                            },
+                                            "message": {
+                                                "type": "string",
+                                                "example": "Máquina entrou em manutenção"
+                                            },
+                                            "triggered_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-01-10T09:00:00Z"
+                                            },
+                                            "is_read": {
+                                                "type": "boolean",
+                                                "example": false
+                                            },
+                                            "machine": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Alertas de Status"
+                ],
+                "summary": "Cria um novo alerta de status",
+                "operationId": "e409627d0f8abc669537e770636aa24b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "machine_id",
+                                    "previous_status",
+                                    "new_status",
+                                    "triggered_at"
+                                ],
+                                "properties": {
+                                    "machine_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "previous_status": {
+                                        "type": "string",
+                                        "example": "active"
+                                    },
+                                    "new_status": {
+                                        "type": "string",
+                                        "example": "inactive"
+                                    },
+                                    "message": {
+                                        "type": "string",
+                                        "example": "Máquina desligada por falta de energia"
+                                    },
+                                    "triggered_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-01-10T09:00:00Z"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Alerta criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "machine_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "previous_status": {
+                                            "type": "string",
+                                            "example": "active"
+                                        },
+                                        "new_status": {
+                                            "type": "string",
+                                            "example": "inactive"
+                                        },
+                                        "is_read": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "machine": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/status-alerts/{id}": {
+            "get": {
+                "tags": [
+                    "Alertas de Status"
+                ],
+                "summary": "Retorna um alerta de status específico",
+                "operationId": "7662693714a35846b8dfacfc0c7694f4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do alerta",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dados do alerta",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "machine_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "previous_status": {
+                                            "type": "string",
+                                            "example": "active"
+                                        },
+                                        "new_status": {
+                                            "type": "string",
+                                            "example": "maintenance"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Máquina entrou em manutenção"
+                                        },
+                                        "triggered_at": {
+                                            "type": "string",
+                                            "example": "2024-01-10T09:00:00Z"
+                                        },
+                                        "is_read": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "machine": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Alerta não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Alertas de Status"
+                ],
+                "summary": "Atualiza um alerta de status",
+                "operationId": "441cc02eb4db27b8b5142082537ca8df",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do alerta",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "message": {
+                                        "type": "string",
+                                        "example": "Alerta revisado pela equipe"
+                                    },
+                                    "is_read": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Alerta atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Alerta revisado pela equipe"
+                                        },
+                                        "is_read": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Alerta não encontrado"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Alertas de Status"
+                ],
+                "summary": "Remove um alerta de status",
+                "operationId": "91053d2dd5a4f4c3be2f9b5ada24850d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do alerta",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Alerta removido com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Alerta removido"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Alerta não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Lista todos os usuários",
+                "operationId": "7208c29037df2b8bb02499ba39ed8a78",
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuários com seus papéis",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "João Silva"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "example": "joao@exemplo.com"
+                                            },
+                                            "roles": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "admin"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Cria um novo usuário",
+                "operationId": "262eb5ca1fdea354023c0a8870442c1e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Maria Santos"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "maria@exemplo.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "secret123",
+                                        "minLength": 6
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "tecnico",
+                                        "enum": [
+                                            "admin",
+                                            "gerente",
+                                            "tecnico",
+                                            "operador"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuário criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Maria Santos"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "maria@exemplo.com"
+                                        },
+                                        "roles": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "tecnico"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Retorna um usuário específico",
+                "operationId": "6946bbab7898f59a09e3c8e529a38907",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dados do usuário",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "João Silva"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "joao@exemplo.com"
+                                        },
+                                        "roles": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "admin"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Atualiza um usuário",
+                "operationId": "05028d02ea3e9a99abd6260cfe05b179",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "João Atualizado"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "joao.novo@exemplo.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "novasenha123",
+                                        "minLength": 6
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "gerente",
+                                        "enum": [
+                                            "admin",
+                                            "gerente",
+                                            "tecnico",
+                                            "operador"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuário atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "João Atualizado"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "joao.novo@exemplo.com"
+                                        },
+                                        "roles": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "gerente"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Remove um usuário",
+                "operationId": "b3d28da5dc9de7fc1bd425f93b54ff7b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuário removido com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuário removido"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Sem permissão"
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Máquinas",
+            "description": "Máquinas"
+        },
+        {
+            "name": "Leituras de Máquinas",
+            "description": "Leituras de Máquinas"
+        },
+        {
+            "name": "Logs de Manutenção",
+            "description": "Logs de Manutenção"
+        },
+        {
+            "name": "Ordens de Serviço",
+            "description": "Ordens de Serviço"
+        },
+        {
+            "name": "Alertas de Status",
+            "description": "Alertas de Status"
+        },
+        {
+            "name": "Usuários",
+            "description": "Usuários"
+        }
+    ]
+}
