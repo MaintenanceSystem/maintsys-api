@@ -3,47 +3,68 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ServiceOrder;
 use Illuminate\Http\Request;
 
 class ServiceOrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return response()->json(
+            ServiceOrder::with(['machine', 'technician', 'creator'])->get()
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'machine_id'     => 'required|exists:machines,id',
+            'technician_id'  => 'nullable|exists:users,id',
+            'type'           => 'required|in:preventive,corrective',
+            'status'         => 'in:open,in_progress,completed,cancelled',
+            'started_at'     => 'nullable|date',
+            'completed_at'   => 'nullable|date',
+        ]);
+
+        $order = ServiceOrder::create([
+            ...$request->all(),
+            'created_by' => auth()->id(),
+        ]);
+
+        return response()->json(
+            $order->load(['machine', 'technician', 'creator']), 201
+        );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(ServiceOrder $serviceOrder)
     {
-        //
+        return response()->json(
+            $serviceOrder->load(['machine', 'technician', 'creator', 'logs'])
+        );
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, ServiceOrder $serviceOrder)
     {
-        //
+        $request->validate([
+            'machine_id'    => 'exists:machines,id',
+            'technician_id' => 'nullable|exists:users,id',
+            'type'          => 'in:preventive,corrective',
+            'status'        => 'in:open,in_progress,completed,cancelled',
+            'started_at'    => 'nullable|date',
+            'completed_at'  => 'nullable|date',
+        ]);
+
+        $serviceOrder->update($request->all());
+
+        return response()->json(
+            $serviceOrder->load(['machine', 'technician', 'creator'])
+        );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(ServiceOrder $serviceOrder)
     {
-        //
+        $serviceOrder->delete();
+
+        return response()->json(['message' => 'Ordem de serviço removida']);
     }
 }

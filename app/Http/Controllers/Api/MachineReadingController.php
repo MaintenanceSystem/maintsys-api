@@ -3,47 +3,59 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\MachineReading;
 use Illuminate\Http\Request;
 
 class MachineReadingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return response()->json(
+            MachineReading::with('machine')->get()
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'machine_id' => 'required|exists:machines,id',
+            'sensor_key' => 'required|string',
+            'value'      => 'required|numeric',
+            'unit'       => 'nullable|string',
+            'read_at'    => 'required|date',
+        ]);
+
+        $reading = MachineReading::create($request->all());
+
+        return response()->json(
+            $reading->load('machine'), 201
+        );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(MachineReading $machineReading)
     {
-        //
+        return response()->json(
+            $machineReading->load('machine')
+        );
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, MachineReading $machineReading)
     {
-        //
+        $request->validate([
+            'sensor_key' => 'string',
+            'value'      => 'numeric',
+            'unit'       => 'nullable|string',
+            'read_at'    => 'date',
+        ]);
+
+        $machineReading->update($request->all());
+
+        return response()->json($machineReading);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(MachineReading $machineReading)
     {
-        //
+        $machineReading->delete();
+        return response()->json(['message' => 'Leitura removida']);
     }
 }
