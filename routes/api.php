@@ -33,4 +33,5 @@ Route::middleware(['auth:sanctum', 'role:admin|gerente|tecnico'])->group(functio
 // Qualquer autenticado
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
 });
